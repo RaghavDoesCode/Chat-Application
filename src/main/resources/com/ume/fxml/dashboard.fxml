@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.ume.controllers.DashboardController"
+      styleClass="dashboard-root"
+      prefWidth="900" prefHeight="620">
+
+    <!-- LEFT PANEL -->
+    <VBox styleClass="left-panel" prefWidth="280" minWidth="240">
+
+        <!-- App header -->
+        <HBox styleClass="left-header" alignment="CENTER_LEFT" spacing="10">
+            <Label text="uMe" styleClass="left-logo"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Logout" styleClass="logout-btn" onAction="#handleLogout"/>
+        </HBox>
+
+        <!-- Tabs: Friends / Requests / Find -->
+        <TabPane fx:id="leftTabPane" styleClass="side-tabs" VBox.vgrow="ALWAYS"
+                 tabClosingPolicy="UNAVAILABLE">
+
+            <Tab text="Friends">
+                <VBox>
+                    <ListView fx:id="friendsListView" styleClass="user-list" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+
+            <Tab text="Requests">
+                <ListView fx:id="requestsListView" styleClass="user-list" VBox.vgrow="ALWAYS"/>
+            </Tab>
+
+            <Tab text="Find">
+                <VBox spacing="8" style="-fx-padding: 10;">
+                    <HBox spacing="8">
+                        <TextField fx:id="searchField" promptText="Search by name..."
+                                   styleClass="search-field" HBox.hgrow="ALWAYS"/>
+                        <Button text="Go" styleClass="search-btn" onAction="#handleSearch"/>
+                    </HBox>
+                    <ListView fx:id="searchListView" styleClass="user-list" VBox.vgrow="ALWAYS"
+                              prefHeight="400"/>
+                </VBox>
+            </Tab>
+        </TabPane>
+    </VBox>
+
+    <!-- RIGHT PANEL — CHAT -->
+    <VBox HBox.hgrow="ALWAYS" styleClass="chat-area">
+
+        <!-- Welcome screen when no chat is open -->
+        <VBox fx:id="welcomeLabel" alignment="CENTER" VBox.vgrow="ALWAYS" spacing="12"
+              styleClass="welcome-pane">
+            <Label text="👋" style="-fx-font-size: 48px;"/>
+            <Label text="Select a friend to start chatting" styleClass="welcome-text"/>
+        </VBox>
+
+        <!-- Chat pane (hidden until a friend is selected) -->
+        <VBox fx:id="chatPane" VBox.vgrow="ALWAYS">
+
+            <!-- Chat header -->
+            <HBox styleClass="chat-header" alignment="CENTER_LEFT" spacing="12">
+                <Label fx:id="chatHeaderName" styleClass="chat-header-name"/>
+                <Label fx:id="chatHeaderStatus" styleClass="chat-header-status"/>
+            </HBox>
+
+            <!-- Messages -->
+            <ScrollPane fx:id="chatScrollPane" styleClass="chat-scroll"
+                        fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox fx:id="messagesBox" spacing="4" styleClass="messages-box"/>
+            </ScrollPane>
+
+            <!-- Input bar -->
+            <HBox styleClass="input-bar" spacing="10" alignment="CENTER">
+                <TextField fx:id="messageInput" promptText="Type a message..."
+                           styleClass="message-input" HBox.hgrow="ALWAYS"
+                           onAction="#handleSendMessage"/>
+                <Button fx:id="sendBtn" text="Send" styleClass="send-btn"
+                        onAction="#handleSendMessage"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</HBox>

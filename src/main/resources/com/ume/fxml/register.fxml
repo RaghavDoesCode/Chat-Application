@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.ume.controllers.RegisterController"
+      styleClass="auth-root"
+      alignment="CENTER"
+      spacing="0">
+
+    <VBox styleClass="auth-card" alignment="CENTER" spacing="20">
+
+        <Label text="uMe" styleClass="app-logo"/>
+        <Label text="Create your account" styleClass="app-tagline"/>
+
+        <VBox spacing="12" style="-fx-padding: 20 0 0 0;">
+            <TextField fx:id="nameField" promptText="Full name" styleClass="auth-field"/>
+            <TextField fx:id="emailField" promptText="Email address" styleClass="auth-field"/>
+            <PasswordField fx:id="passwordField" promptText="Password (min 6 chars)" styleClass="auth-field"/>
+            <PasswordField fx:id="confirmPasswordField" promptText="Confirm password" styleClass="auth-field"/>
+            <Label fx:id="errorLabel" styleClass="error-label" wrapText="true"/>
+            <Button fx:id="registerBtn" text="Create Account" styleClass="primary-btn"
+                    onAction="#handleRegister" maxWidth="Infinity"/>
+        </VBox>
+
+        <Label text="Already have an account? Login"
+               styleClass="switch-label"
+               onMouseClicked="#goToLogin"/>
+    </VBox>
+</VBox>
