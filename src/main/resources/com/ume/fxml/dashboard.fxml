@@ -12,7 +12,7 @@
 
         <!-- App header -->
         <HBox styleClass="left-header" alignment="CENTER_LEFT" spacing="10">
-            <Label text="uMe" styleClass="left-logo"/>
+            <Label text="WeConnect" styleClass="left-logo"/>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Logout" styleClass="logout-btn" onAction="#handleLogout"/>
         </HBox>

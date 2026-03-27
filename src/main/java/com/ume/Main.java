@@ -20,7 +20,7 @@ public class Main extends Application {
         Parent root = loader.load();
         Scene scene = new Scene(root, 420, 580);
         scene.getStylesheets().add(getClass().getResource("/com/ume/css/style.css").toExternalForm());
-        stage.setTitle("uMe — Login");
+        stage.setTitle("WeConnect — Login");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

@@ -10,7 +10,7 @@
 
     <VBox styleClass="auth-card" alignment="CENTER" spacing="20">
 
-        <Label text="uMe" styleClass="app-logo"/>
+        <Label text="WeConnect" styleClass="app-logo"/>
         <Label text="Create your account" styleClass="app-tagline"/>
 
         <VBox spacing="12" style="-fx-padding: 20 0 0 0;">
