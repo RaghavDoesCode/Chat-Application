@@ -1,4 +1,4 @@
-package com.ume.services;
+package com.WeConnect.services;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -53,7 +53,7 @@ public class FirebaseService {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
                 java.io.InputStream serviceAccount =
-                    FirebaseService.class.getResourceAsStream("/com/ume/serviceAccountKey.json");
+                    FirebaseService.class.getResourceAsStream("/com/WeConnect/serviceAccountKey.json");
 
             FirebaseOptions options = FirebaseOptions.builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))

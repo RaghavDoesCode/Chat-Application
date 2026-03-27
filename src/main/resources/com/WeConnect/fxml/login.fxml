@@ -4,7 +4,7 @@
 <?import javafx.scene.text.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.ume.controllers.LoginController"
+      fx:controller="com.WeConnect.controllers.LoginController"
       styleClass="auth-root"
       alignment="CENTER"
       spacing="0">

@@ -1,7 +1,7 @@
-package com.ume.controllers;
+package com.WeConnect.controllers;
 
-import com.ume.Main;
-import com.ume.services.FirebaseService;
+import com.WeConnect.Main;
+import com.WeConnect.services.FirebaseService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -66,10 +66,10 @@ public class RegisterController {
 
     @FXML
     private void goToLogin() throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/com/ume/fxml/login.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/com/WeConnect/fxml/login.fxml"));
         Scene scene = new Scene(root, 420, 580);
-        scene.getStylesheets().add(getClass().getResource("/com/ume/css/style.css").toExternalForm());
-        Main.primaryStage.setTitle("uMe — Login");
+        scene.getStylesheets().add(getClass().getResource("/com/WeConnect/css/style.css").toExternalForm());
+        Main.primaryStage.setTitle("WeConnect — Login");
         Main.primaryStage.setScene(scene);
     }
 

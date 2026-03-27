@@ -1,4 +1,4 @@
-package com.ume.models;
+package com.WeConnect.models;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,6 +1,6 @@
-package com.ume;
+package com.WeConnect;
 
-import com.ume.services.FirebaseService;
+import com.WeConnect.services.FirebaseService;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -16,10 +16,10 @@ public class Main extends Application {
     public void start(Stage stage) throws Exception {
         FirebaseService.initialize();
         primaryStage = stage;
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/ume/fxml/login.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/WeConnect/fxml/login.fxml"));
         Parent root = loader.load();
         Scene scene = new Scene(root, 420, 580);
-        scene.getStylesheets().add(getClass().getResource("/com/ume/css/style.css").toExternalForm());
+        scene.getStylesheets().add(getClass().getResource("/com/WeConnect/css/style.css").toExternalForm());
         stage.setTitle("WeConnect — Login");
         stage.setScene(scene);
         stage.setResizable(false);

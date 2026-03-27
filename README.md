@@ -1,7 +1,7 @@
-# uMe — JavaFX Chat Application
+# WeConnect — JavaFX Chat Application
 
 A desktop chat application built in Java (JavaFX) using Firebase as the backend.
-Recreated from the original Android uMe project for DAA coursework demonstration.
+Recreated from the original Android WeConnect project for DAA coursework demonstration.
 
 ---
 
@@ -28,9 +28,9 @@ Recreated from the original Android uMe project for DAA coursework demonstration
 ## Project Structure
 
 ```
-uMe-javafx/
+WeConnect-javafx/
 ├── pom.xml                          ← Maven config, all dependencies
-├── src/main/java/com/ume/
+├── src/main/java/com/WeConnect/
 │   ├── Main.java                    ← Entry point, launch JavaFX
 │   ├── controllers/
 │   │   ├── LoginController.java     ← Login screen logic
@@ -41,7 +41,7 @@ uMe-javafx/
 │   │   └── Message.java
 │   └── services/
 │       └── FirebaseService.java     ← ALL Firebase operations (core file)
-└── src/main/resources/com/ume/
+└── src/main/resources/com/WeConnect/
     ├── fxml/
     │   ├── login.fxml
     │   ├── register.fxml
@@ -57,14 +57,14 @@ uMe-javafx/
 ### Step 1 — Firebase Project Setup (5 minutes)
 
 1. Go to [https://console.firebase.google.com](https://console.firebase.google.com)
-2. Click **"Add Project"** → name it `uMe`
+2. Click **"Add Project"** → name it `WeConnect`
 3. In the left sidebar: **Build → Authentication**
    - Click **"Get started"**
    - Enable **Email/Password** provider
 4. In the left sidebar: **Build → Realtime Database**
    - Click **"Create database"**
    - Choose any region → Start in **test mode**
-   - Copy the database URL (looks like `https://ume-xxxxx-default-rtdb.firebaseio.com`)
+   - Copy the database URL (looks like `https://WeConnect-xxxxx-default-rtdb.firebaseio.com`)
 5. In the left sidebar: **Project Settings (gear icon) → Service Accounts**
    - Click **"Generate new private key"**
    - Save the downloaded JSON as `serviceAccountKey.json`
@@ -73,7 +73,7 @@ uMe-javafx/
 
 1. Copy `serviceAccountKey.json` into:
    ```
-   src/main/resources/com/ume/serviceAccountKey.json
+   src/main/resources/com/WeConnect/serviceAccountKey.json
    ```
 
 2. Open `FirebaseService.java` and replace line ~47:
@@ -87,7 +87,7 @@ uMe-javafx/
 Make sure you have **Java 17+** and **Maven** installed.
 
 ```bash
-cd uMe-javafx
+cd WeConnect-javafx
 mvn javafx:run
 ```
 

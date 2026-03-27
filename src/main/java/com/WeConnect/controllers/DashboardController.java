@@ -1,11 +1,11 @@
-package com.ume.controllers;
+package com.WeConnect.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ume.models.Message;
-import com.ume.models.User;
-import com.ume.services.FirebaseService;
+import com.WeConnect.models.Message;
+import com.WeConnect.models.User;
+import com.WeConnect.services.FirebaseService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -279,13 +279,13 @@ public class DashboardController {
         FirebaseService.getInstance().logout();
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    getClass().getResource("/com/ume/fxml/login.fxml"));
+                    getClass().getResource("/com/WeConnect/fxml/login.fxml"));
             javafx.scene.Parent root = loader.load();
             javafx.scene.Scene scene = new javafx.scene.Scene(root, 420, 580);
-            scene.getStylesheets().add(getClass().getResource("/com/ume/css/style.css").toExternalForm());
-            com.ume.Main.primaryStage.setTitle("uMe — Login");
-            com.ume.Main.primaryStage.setResizable(false);
-            com.ume.Main.primaryStage.setScene(scene);
+            scene.getStylesheets().add(getClass().getResource("/com/WeConnect/css/style.css").toExternalForm());
+            com.WeConnect.Main.primaryStage.setTitle("WeConnect — Login");
+            com.WeConnect.Main.primaryStage.setResizable(false);
+            com.WeConnect.Main.primaryStage.setScene(scene);
         } catch (Exception e) {
             e.printStackTrace();
         }

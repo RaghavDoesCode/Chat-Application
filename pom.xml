@@ -5,8 +5,8 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ume</groupId>
-    <artifactId>uMe-javafx</artifactId>
+    <groupId>com.WeConnect</groupId>
+    <artifactId>WeConnect-javafx</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
@@ -49,7 +49,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.ume.Main</mainClass>
+                    <mainClass>com.WeConnect.Main</mainClass>
                 </configuration>
             </plugin>
 

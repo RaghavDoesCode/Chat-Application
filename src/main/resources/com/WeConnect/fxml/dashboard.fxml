@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.*?>
 
 <HBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.ume.controllers.DashboardController"
+      fx:controller="com.WeConnect.controllers.DashboardController"
       styleClass="dashboard-root"
       prefWidth="900" prefHeight="620">
 
