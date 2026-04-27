@@ -1,29 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
 
 <HBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.WeConnect.controllers.DashboardController"
       styleClass="dashboard-root"
-      prefWidth="900" prefHeight="620">
+      prefWidth="960" prefHeight="640">
 
-    <!-- LEFT PANEL -->
-    <VBox styleClass="left-panel" prefWidth="280" minWidth="240">
+    <!-- ═══════════════ LEFT PANEL ═══════════════ -->
+    <VBox styleClass="left-panel" prefWidth="290" minWidth="250">
 
-        <!-- App header -->
+        <!-- Header: logo + current user info -->
         <HBox styleClass="left-header" alignment="CENTER_LEFT" spacing="10">
-            <Label text="WeConnect" styleClass="left-logo"/>
-            <Region HBox.hgrow="ALWAYS"/>
+            <!-- Profile avatar (clickable to change) -->
+            <StackPane onMouseClicked="#handleChangeProfilePicture" style="-fx-cursor: hand;">
+                <ImageView fx:id="currentUserAvatar"
+                           fitWidth="36" fitHeight="36"
+                           preserveRatio="true"
+                           style="-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),4,0,0,1);"/>
+                <Label text="👤" style="-fx-font-size:22px;" visible="true"/>
+            </StackPane>
+            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                <Label fx:id="currentUserNameLabel" text="" styleClass="left-logo"/>
+                <Label text="click avatar to change pic" styleClass="cell-sub"
+                       style="-fx-font-size:9px; -fx-text-fill:#3a3a50;"/>
+            </VBox>
             <Button text="Logout" styleClass="logout-btn" onAction="#handleLogout"/>
         </HBox>
 
-        <!-- Tabs: Friends / Requests / Find -->
+        <!-- Tabs: Chats / Groups / Requests / Find -->
         <TabPane fx:id="leftTabPane" styleClass="side-tabs" VBox.vgrow="ALWAYS"
                  tabClosingPolicy="UNAVAILABLE">
 
             <Tab text="Friends">
-                <VBox>
-                    <ListView fx:id="friendsListView" styleClass="user-list" VBox.vgrow="ALWAYS"/>
+                <ListView fx:id="friendsListView" styleClass="user-list" VBox.vgrow="ALWAYS"/>
+            </Tab>
+
+            <Tab text="Groups">
+                <VBox VBox.vgrow="ALWAYS">
+                    <Button text="＋ New Group" styleClass="new-group-btn"
+                            maxWidth="Infinity" onAction="#handleCreateGroup"/>
+                    <ListView fx:id="groupsListView" styleClass="user-list" VBox.vgrow="ALWAYS"/>
                 </VBox>
             </Tab>
 
@@ -38,46 +57,68 @@
                                    styleClass="search-field" HBox.hgrow="ALWAYS"/>
                         <Button text="Go" styleClass="search-btn" onAction="#handleSearch"/>
                     </HBox>
-                    <ListView fx:id="searchListView" styleClass="user-list" VBox.vgrow="ALWAYS"
-                              prefHeight="400"/>
+                    <ListView fx:id="searchListView" styleClass="user-list"
+                              VBox.vgrow="ALWAYS" prefHeight="400"/>
                 </VBox>
             </Tab>
+
         </TabPane>
     </VBox>
 
-    <!-- RIGHT PANEL — CHAT -->
+    <!-- ═══════════════ RIGHT PANEL ═══════════════ -->
     <VBox HBox.hgrow="ALWAYS" styleClass="chat-area">
 
-        <!-- Welcome screen when no chat is open -->
-        <VBox fx:id="welcomeLabel" alignment="CENTER" VBox.vgrow="ALWAYS" spacing="12"
+        <!-- Welcome screen -->
+        <VBox fx:id="welcomePane" alignment="CENTER" VBox.vgrow="ALWAYS" spacing="12"
               styleClass="welcome-pane">
-            <Label text="👋" style="-fx-font-size: 48px;"/>
-            <Label text="Select a friend to start chatting" styleClass="welcome-text"/>
+            <Label text="💬" style="-fx-font-size: 52px;"/>
+            <Label text="Select a friend or group to start chatting"
+                   styleClass="welcome-text"/>
         </VBox>
 
-        <!-- Chat pane (hidden until a friend is selected) -->
+        <!-- Chat pane -->
         <VBox fx:id="chatPane" VBox.vgrow="ALWAYS">
 
-            <!-- Chat header -->
+            <!-- Chat header with avatar -->
             <HBox styleClass="chat-header" alignment="CENTER_LEFT" spacing="12">
-                <Label fx:id="chatHeaderName" styleClass="chat-header-name"/>
-                <Label fx:id="chatHeaderStatus" styleClass="chat-header-status"/>
+                <ImageView fx:id="chatHeaderAvatar"
+                           fitWidth="38" fitHeight="38"
+                           preserveRatio="true"/>
+                <VBox spacing="2">
+                    <Label fx:id="chatHeaderName" styleClass="chat-header-name"/>
+                    <Label fx:id="chatHeaderStatus" styleClass="chat-header-status"/>
+                </VBox>
             </HBox>
 
-            <!-- Messages -->
+            <!-- Messages area -->
             <ScrollPane fx:id="chatScrollPane" styleClass="chat-scroll"
                         fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox fx:id="messagesBox" spacing="4" styleClass="messages-box"/>
             </ScrollPane>
 
-            <!-- Input bar -->
-            <HBox styleClass="input-bar" spacing="10" alignment="CENTER">
+            <!-- Input bar with emoji, attach, audio, send -->
+            <HBox styleClass="input-bar" spacing="8" alignment="CENTER">
+
+                <!-- Emoji button -->
+                <Button text="😊" styleClass="icon-btn" onAction="#handleEmojiPicker"/>
+
+                <!-- Attach file button -->
+                <Button text="📎" styleClass="icon-btn" onAction="#handleSendFile"/>
+
+                <!-- Record audio button -->
+                <Button text="🎙" styleClass="icon-btn" onAction="#handleRecordAudio"/>
+
+                <!-- Text input -->
                 <TextField fx:id="messageInput" promptText="Type a message..."
                            styleClass="message-input" HBox.hgrow="ALWAYS"
                            onAction="#handleSendMessage"/>
+
+                <!-- Send button -->
                 <Button fx:id="sendBtn" text="Send" styleClass="send-btn"
                         onAction="#handleSendMessage"/>
             </HBox>
+
         </VBox>
     </VBox>
+
 </HBox>
