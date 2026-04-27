@@ -12,14 +12,27 @@ import com.WeConnect.models.User;
 import com.WeConnect.services.FirebaseService;
 
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -558,7 +571,7 @@ public class DashboardController {
             HBox audioRow = new HBox(10, playBtn, fileLabel);
             audioRow.setAlignment(Pos.CENTER_LEFT);
 
-            playBtn.setOnAction(e -> showAlert("Audio playback not supported on this device."));
+            playBtn.setOnAction(e -> playAudioFromBase64(content, playBtn));
 
             VBox audioBubble = new VBox(audioRow);
             audioBubble.getStyleClass().add(mine ? "bubble-mine" : "bubble-theirs");
