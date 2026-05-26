@@ -15,12 +15,14 @@
         <!-- Header: logo + current user info -->
         <HBox styleClass="left-header" alignment="CENTER_LEFT" spacing="10">
             <!-- Profile avatar (clickable to change) -->
-            <StackPane onMouseClicked="#handleChangeProfilePicture" style="-fx-cursor: hand;">
+            <StackPane fx:id="avatarPane" onMouseClicked="#handleAvatarClick"
+                style="-fx-cursor: hand;" minWidth="36" minHeight="36"
+                maxWidth="36" maxHeight="36">
                 <ImageView fx:id="currentUserAvatar"
-                           fitWidth="36" fitHeight="36"
-                           preserveRatio="true"
-                           style="-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),4,0,0,1);"/>
-                <Label text="👤" style="-fx-font-size:22px;" visible="true"/>
+                    fitWidth="36" fitHeight="36"
+                    preserveRatio="false"
+                    style="-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.4),4,0,0,1);" />
+                <Label fx:id="defaultAvatarLabel" text="👤" style="-fx-font-size:22px;" />
             </StackPane>
             <VBox spacing="2" HBox.hgrow="ALWAYS">
                 <Label fx:id="currentUserNameLabel" text="" styleClass="left-logo"/>

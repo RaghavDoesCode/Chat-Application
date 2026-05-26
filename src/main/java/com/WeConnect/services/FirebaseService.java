@@ -136,11 +136,13 @@ public class FirebaseService {
                         String val = (String) s.getValue();
                         currentUserProfileBase64 =
                             (val != null && !val.equals("default")) ? val : null;
+                            f.complete(currentUserUID);
                     }
-                    @Override public void onCancelled(DatabaseError e) {}
+                    @Override public void onCancelled(DatabaseError e) {
+                        f.complete(currentUserUID);
+                    }
                 });
 
-            f.complete(currentUserUID);
         } catch (Exception e) { f.completeExceptionally(e); }
         return f;
     }
@@ -260,24 +262,48 @@ public class FirebaseService {
     // MESSAGES — LISTEN
     // ─────────────────────────────────────────────
 
-    public void listenForMessages(String friendUID, MessageListener listener) {
-        database.getReference("messages")
-            .child(currentUserUID).child(friendUID)
-            .addChildEventListener(new ChildEventListener() {
-                @Override public void onChildAdded(DataSnapshot s, String prev) {
-                    String text = (String) s.child("message").getValue();
-                    String from = (String) s.child("from").getValue();
-                    String type = (String) s.child("type").getValue();
-                    String file = (String) s.child("fileName").getValue();
-                    long   time = s.child("time").getValue(Long.class);
-                    listener.onNewMessage(from, text, time,
-                        type != null ? type : "text", file);
-                }
-                @Override public void onChildChanged(DataSnapshot s, String p) {}
-                @Override public void onChildRemoved(DataSnapshot s) {}
-                @Override public void onChildMoved(DataSnapshot s, String p) {}
-                @Override public void onCancelled(DatabaseError e) {}
-            });
+    public ChildEventListener listenForMessages(String friendUID, MessageListener listener) {
+        DatabaseReference ref = database.getReference("messages")
+                .child(currentUserUID).child(friendUID);
+
+        ChildEventListener cel = new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot s, String prev) {
+                emit(s);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot s, String prev) {
+                emit(s); // fires when seen flips to true
+            }
+
+            private void emit(DataSnapshot s) {
+                String key = s.getKey();
+                String text = (String) s.child("message").getValue();
+                String from = (String) s.child("from").getValue();
+                String type = (String) s.child("type").getValue();
+                String file = (String) s.child("fileName").getValue();
+                long time = s.child("time").getValue(Long.class);
+                Boolean seenVal = s.child("seen").getValue(Boolean.class);
+                boolean seen = seenVal != null && seenVal;
+                listener.onNewMessage(key, from, text, time,
+                        type != null ? type : "text", file, seen);
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot s) {
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot s, String p) {
+            }
+
+            @Override
+            public void onCancelled(DatabaseError e) {
+            }
+        };
+        ref.addChildEventListener(cel);
+        return cel;
     }
 
     public void markMessagesAsSeen(String friendUID) {
@@ -541,8 +567,8 @@ public class FirebaseService {
     // ─────────────────────────────────────────────
 
     public interface MessageListener {
-        void onNewMessage(String fromUID, String message, long timestamp,
-                          String type, String fileName);
+    void onNewMessage(String msgKey, String fromUID, String message, long timestamp,
+                      String type, String fileName, boolean seen);
     }
     public interface GroupMessageListener {
         void onNewGroupMessage(String fromUID, String senderName, String message,
