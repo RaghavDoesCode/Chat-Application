@@ -1,0 +1,281 @@
+## WeConnect — Complete Project Structure
+
+---
+
+```
+WeConnect/
+├── pom.xml
+└── src/main/
+    ├── java/com/WeConnect/
+    │   ├── Main.java
+    │   ├── models/
+    │   │   ├── User.java
+    │   │   ├── Message.java
+    │   │   └── Group.java
+    │   ├── services/
+    │   │   └── FirebaseService.java
+    │   └── controllers/
+    │       ├── LoginController.java
+    │       ├── DashboardController.java
+    │       └── AudioRecorder.java
+    └── resources/com/WeConnect/
+        ├── fxml/
+        │   ├── login.fxml
+        │   ├── register.fxml
+        │   └── dashboard.fxml
+        ├── css/
+        │   └── style.css
+        └── serviceAccountKey.json
+```
+
+---
+
+## pom.xml
+**Purpose:** Maven build file. Manages all dependencies and build configuration.
+
+**Dependencies:**
+- `javafx-controls` — UI components (Button, Label, ListView etc.)
+- `javafx-fxml` — FXML layout support
+- `javafx-media` — declared but replaced by javax.sound.sampled at runtime
+- `firebase-admin 9.2.0` — Firebase Auth + Realtime Database
+
+**Plugins:**
+- `javafx-maven-plugin` — allows `mvn javafx:run` to launch the app
+- `maven-compiler-plugin` — compiles with Java 17
+
+---
+
+## Main.java
+**Purpose:** Entry point of the application. Initializes Firebase and launches the JavaFX window.
+
+**Imports:** `FirebaseService`, `javafx.application.Application`, `javafx.fxml.FXMLLoader`, `javafx.scene.Scene`, `javafx.stage.Stage`
+
+**Fields:**
+- `primaryStage` — static reference to the main window, used across controllers to switch scenes
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `start()` | Calls Firebase initialize, loads login.fxml, sets up and shows the primary stage |
+| `main()` | Launches the JavaFX application |
+
+---
+
+## models/User.java
+**Purpose:** Represents a user in the system. Used everywhere a user object is passed around.
+
+**Imports:** None (pure model)
+
+**Fields:**
+- `uid` — Firebase Auth unique ID
+- `name` — display name
+- `email` — user email
+- `status` — "online" or "offline"
+- `profileImage` — "default" or Base64 data URI
+- `profileImageUrl` — resolved URL (legacy field, kept for compatibility)
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `User()` | Empty constructor for Firebase deserialization |
+| `User(uid, name, email)` | Main constructor, sets status to offline and profileImage to default |
+| `isOnline()` | Returns true if status equals "online" |
+| `toString()` | Returns name, used by ListView to display user |
+| Getters/Setters | Standard for all fields |
+
+---
+
+## models/Message.java
+**Purpose:** Represents a single chat message. Supports all message types.
+
+**Imports:** `java.text.SimpleDateFormat`, `java.util.Date`
+
+**Fields:**
+- `from` — sender UID
+- `message` — text content or Base64 data URI for media
+- `time` — Unix timestamp in milliseconds
+- `seen` — boolean, false until recipient opens chat
+- `type` — "text", "image", "file", "audio"
+- `fileName` — original filename for file/audio messages
+- `groupId` — null for 1-on-1, set for group messages
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `Message()` | Empty constructor |
+| `Message(from, message, time, seen)` | Text message constructor, sets type to "text" |
+| `Message(from, message, time, seen, type)` | Full constructor with type |
+| `getFormattedTime()` | Returns time as "hh:mm a" string |
+| `isText/isImage/isFile/isAudio()` | Type check helpers |
+| Getters/Setters | Standard for all fields |
+
+---
+
+## models/Group.java
+**Purpose:** Represents a group chat. Stored under `/groups/{groupId}` in Firebase.
+
+**Imports:** `java.util.ArrayList`, `java.util.List`
+
+**Fields:**
+- `groupId` — Firebase generated key
+- `name` — group display name
+- `createdBy` — UID of creator
+- `createdAt` — creation timestamp
+- `members` — list of member UIDs
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `Group()` | Empty constructor, initializes members list |
+| `Group(groupId, name, createdBy)` | Main constructor |
+| `addMember(uid)` | Adds a UID to members list if not already present |
+| `toString()` | Returns group name |
+| Getters/Setters | Standard for all fields |
+
+---
+
+## services/FirebaseService.java
+**Purpose:** The entire backend of the app. Handles all Firebase operations — auth, database reads/writes, listeners. Singleton pattern.
+
+**Imports:** `java.io.File`, `java.io.IOException`, `java.nio.file.Files`, `java.util.Base64`, `java.util.HashMap`, `java.util.List`, `java.util.Map`, `java.util.concurrent.CompletableFuture`, `com.google.auth.oauth2.GoogleCredentials`, `com.google.firebase.*`, `com.google.firebase.auth.*`, `com.google.firebase.database.*`
+
+**Static Fields:**
+- `currentUserUID` — logged in user's UID
+- `currentUserEmail` — logged in user's email
+- `currentUserName` — logged in user's display name
+- `currentUserProfileBase64` — logged in user's profile picture data URI
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `getInstance()` | Returns singleton instance |
+| `initialize()` | Loads serviceAccountKey.json, sets up Firebase connection, called once from Main |
+| `getDatabase()` | Returns root database reference |
+| `registerUser()` | Creates Firebase Auth user, saves user data to /users/{uid} |
+| `loginUser()` | Fetches user by email, sets session variables, loads profile picture, sets status online |
+| `logout()` | Saves lastSeen, sets status offline, clears all session variables |
+| `uploadProfilePicture()` | Reads image file, encodes to Base64 data URI, saves to /users/{uid}/profileImage |
+| `sendMessage()` | Entry point for text messages, calls sendInternal() |
+| `sendInternal()` | Builds message body with seen=false, does fan-out write to both sender and receiver paths, updates last message preview |
+| `sendFileMessage()` | Validates file size, encodes file to Base64, calls sendInternal() on background thread |
+| `listenForMessages()` | Attaches ChildEventListener on messages path, fires onChildAdded for new messages and onChildChanged when seen status updates, returns listener reference for cleanup |
+| `markMessagesAsSeen()` | Flips seen=true for all messages from the other person in both fan-out paths |
+| `createGroup()` | Creates group in /groups, writes membership to /user_groups for all members |
+| `sendGroupMessage()` | Writes message to /group_messages/{groupId}, updates group last message |
+| `sendGroupFileMessage()` | Encodes file, calls sendGroupMessage on background thread |
+| `listenForGroupMessages()` | Attaches ChildEventListener on group_messages path |
+| `getUserGroups()` | Fetches all groups the current user belongs to from /user_groups |
+| `sendFriendRequest()` | Writes directed edges to /friend_requests for both users |
+| `acceptFriendRequest()` | Removes request edges, creates undirected edges in /friends for both users |
+| `declineFriendRequest()` | Removes request edges from both paths |
+| `searchUsers()` | Linear O(n) search through all users by name |
+| `getAllFriends()` | Fetches accepted friends from /friends/{uid}, loads each user's data |
+| `getIncomingRequests()` | Fetches pending requests where value equals "sent" |
+| `listenForStatusChange()` | Real-time listener on /users/{uid}/status |
+| `setUserOnlineStatus()` | Writes "online" or "offline" to /users/{uid}/status |
+| `encodeFile()` | Reads file bytes, Base64 encodes, builds data URI with correct MIME type |
+| `getExtension()` | Extracts file extension from filename |
+| `getMime()` | Returns MIME type string based on file extension and type |
+
+**Interfaces:**
+| Interface | Purpose |
+|---|---|
+| `MessageListener` | Callback for new/updated 1-on-1 messages, passes key, from, message, time, type, fileName, seen |
+| `GroupMessageListener` | Callback for group messages, passes from, senderName, message, time, type, fileName |
+| `UserSearchListener` | Callback for user search and friend loading, passes uid, name, email, profilePicData |
+| `GroupListener` | Callback for group loading, passes groupId, groupName |
+| `StatusListener` | Callback for online/offline status changes |
+
+---
+
+## controllers/AudioRecorder.java
+**Purpose:** Records microphone input and saves it as a WAV file using javax.sound.sampled.
+
+**Imports:** `javax.sound.sampled.*`, `java.io.File`
+
+**Fields:**
+- `line` — TargetDataLine, the microphone input stream
+- `recordThread` — background thread that writes audio to file
+- `running` — volatile boolean flag to control recording state
+- `FORMAT` — static AudioFormat defining 44100Hz, 16-bit, mono, PCM
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `start(outputFile)` | Opens microphone line, starts recording on a daemon thread, writes to WAV file |
+| `stop()` | Sets running to false, stops and closes the microphone line which ends the recording thread |
+
+---
+
+## controllers/LoginController.java
+**Purpose:** Handles login and register screen logic. Validates input and navigates to dashboard on success.
+
+**Imports:** `FirebaseService`, `Main`, `javafx.application.Platform`, `javafx.fxml.FXML/FXMLLoader`, `javafx.scene.*`, `javafx.scene.control.*`
+
+**FXML Fields:** `emailField`, `passwordField`, `loginBtn`, `errorLabel`, `switchLabel`
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `initialize()` | Hides error label on load |
+| `handleLogin()` | Validates fields, calls loginUser(), navigates to dashboard on success |
+| `goToRegister()` | Loads register.fxml and switches scene |
+| `navigateToDashboard()` | Loads dashboard.fxml, sets scene size and title |
+| `showError()` | Shows error label with given message |
+
+---
+
+## controllers/DashboardController.java
+**Purpose:** The main controller. Manages the entire dashboard — friends list, chat panel, message rendering, media sending, group chat, profile picture, emoji picker, audio recording.
+
+**Imports:** `java.io.*`, `java.text.SimpleDateFormat`, `java.util.*`, `com.WeConnect.models.User`, `com.WeConnect.services.FirebaseService`, `javafx.application.Platform`, `javafx.fxml.FXML`, `javafx.geometry.*`, `javafx.scene.*`, `javafx.scene.control.*`, `javafx.scene.image.*`, `javafx.scene.layout.*`, `javafx.scene.shape.Circle`, `javafx.stage.*`
+
+**FXML Fields:** `leftTabPane`, `friendsListView`, `requestsListView`, `searchListView`, `groupsListView`, `searchField`, `currentUserNameLabel`, `currentUserAvatar`, `avatarPane`, `defaultAvatarLabel`, `chatPane`, `chatHeaderName`, `chatHeaderStatus`, `chatHeaderAvatar`, `chatScrollPane`, `messagesBox`, `messageInput`, `sendBtn`, `welcomePane`
+
+**State Fields:**
+- `activeFriend` — currently open 1-on-1 chat user
+- `activeGroupId` / `activeGroupName` — currently open group
+- `friendsList` — local list of friend User objects
+- `groupIdList` — local list of group IDs matching groupsListView
+- `activeMessageListener` — reference to current Firebase listener for cleanup
+- `activeMessageRef` — reference to current Firebase database path for cleanup
+- `bubbleMap` — HashMap mapping message key to rendered HBox row for O(1) tick updates
+
+**Methods:**
+| Method | Purpose |
+|---|---|
+| `initialize()` | Sets up initial UI state, loads friends/requests/groups, sets click handlers |
+| `decodeBase64Image()` | Decodes a Base64 data URI string into a JavaFX Image object |
+| `loadMyAvatar()` | Decodes and displays current user's profile picture, hides default 👤 label |
+| `handleAvatarClick()` | If no PFP set goes straight to file chooser, else shows viewer popup |
+| `showProfilePictureViewer()` | Modal popup showing full size PFP with option to change |
+| `pickAndUploadProfilePicture()` | Opens file chooser, calls uploadProfilePicture(), reloads avatar on success |
+| `loadFriends()` | Fetches friends from Firebase, populates friendsListView |
+| `loadGroups()` | Fetches groups from Firebase, populates groupsListView |
+| `handleCreateGroup()` | Two step dialog — get group name, pick members, calls createGroup() |
+| `openGroupChat()` | Removes old listener, sets up group chat header, attaches group message listener |
+| `handleSearch()` | Calls searchUsers() and populates searchListView |
+| `loadIncomingRequests()` | Fetches and displays incoming friend requests with accept/decline buttons |
+| `openChat()` | Removes old listener, clears bubbleMap, sets chat header, attaches message listener, calls markMessagesAsSeen() |
+| `handleSendMessage()` | Reads messageInput, calls sendMessage() or sendGroupMessage() |
+| `handleSendFile()` | Opens file chooser, detects type, calls sendFileMessage() or sendGroupFileMessage() |
+| `handleRecordAudio()` | Modal recording dialog using AudioRecorder, sends WAV on stop |
+| `handleEmojiPicker()` | Modal emoji grid, appends selected emoji to messageInput |
+| `addBubble()` | Renders a message row — handles text/image/audio/file differently, adds time and tick labels, stores row in bubbleMap |
+| `updateTickInBubble()` | Finds tick label inside existing bubble row and updates text and color |
+| `textBubble()` | Creates a styled Label for plain text messages |
+| `playAudioFromBase64()` | Decodes audio data URI, writes to temp file, plays via javax.sound.sampled on background thread |
+| `showImageViewer()` | Modal popup with full size image and save button |
+| `showFileViewer()` | Modal popup with filename and save button |
+| `saveFile()` | Decodes Base64 to bytes, opens save dialog, writes file to chosen location |
+| `buildUserCell()` | Builds a friend/search list row with avatar and name |
+| `initialAvatar()` | Creates a styled label showing first letter of name as fallback avatar |
+| `handleLogout()` | Calls logout(), loads login.fxml |
+| `formatTime()` | Converts Unix timestamp to "hh:mm a" string |
+| `detectType()` | Returns "image", "audio", or "file" based on file extension |
+| `scrollToBottom()` | Sets ScrollPane vvalue to 1.0 |
+| `showAlert()` | Shows a JavaFX information alert dialog |
+
+---
+
+That's the complete structure. Save this for your new chat — it covers every file, every method, every import and field.
