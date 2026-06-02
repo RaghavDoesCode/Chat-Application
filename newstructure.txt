@@ -1,0 +1,87 @@
+Good call. Let me lay out a clean architecture plan before touching any code.
+
+---
+
+## Proposed Architecture
+
+The core idea: **each responsibility gets its own file**. Right now `DashboardController` is a god class and `FirebaseService` mixes auth, database, file encoding, and listeners. We split by *what the code does*.
+
+---
+
+### New Folder Structure
+
+```
+WeConnect/
+└── src/main/java/com/WeConnect/
+    ├── Main.java                          ← unchanged
+    │
+    ├── models/                            ← unchanged
+    │   ├── User.java
+    │   ├── Message.java
+    │   └── Group.java
+    │
+    ├── services/                          ← split FirebaseService into 4
+    │   ├── FirebaseInitializer.java       ← just initialize() + getDatabase()
+    │   ├── AuthService.java               ← register, login, logout, status
+    │   ├── ChatService.java               ← send/listen for 1-on-1 messages
+    │   ├── GroupService.java              ← group create/send/listen
+    │   └── FriendService.java             ← search, friend requests, accept/decline
+    │
+    ├── util/                              ← NEW: pure utility, no Firebase
+    │   ├── FileEncoder.java               ← encodeFile(), getExtension(), getMime()
+    │   └── ImageUtil.java                 ← decodeBase64Image(), initialAvatar()
+    │
+    ├── audio/                             ← AudioRecorder moves here, cleaner home
+    │   └── AudioRecorder.java
+    │
+    └── controllers/
+        ├── LoginController.java           ← unchanged
+        ├── RegisterController.java        ← unchanged
+        ├── DashboardController.java       ← now just a coordinator, calls sub-controllers
+        │
+        ├── chat/                          ← NEW: chat panel split into 3
+        │   ├── ChatPanelController.java   ← openChat(), handleSendMessage(), markSeen
+        │   ├── MessageRenderer.java       ← addBubble(), updateTick(), textBubble()
+        │   └── MediaHandler.java          ← handleSendFile(), handleRecordAudio(), playAudio(), saveFile()
+        │
+        ├── group/                         ← NEW: group logic extracted
+        │   └── GroupPanelController.java  ← openGroupChat(), handleCreateGroup()
+        │
+        └── profile/                       ← NEW: profile/avatar logic extracted
+            └── ProfileController.java     ← handleAvatarClick(), showViewer(), pickAndUpload()
+```
+
+---
+
+### Key Splits Explained
+
+| Before | After | Why |
+|---|---|---|
+| `FirebaseService.java` (1 giant file) | 4 service files | Each handles one domain — auth, chat, groups, friends |
+| `DashboardController.java` (god class) | 1 coordinator + 4 sub-controllers | Each controller handles what's visible in its panel |
+| `AudioRecorder.java` in controllers/ | Moved to `audio/` | It's not a controller, it's a device wrapper |
+| Encoding/decoding methods scattered | `FileEncoder.java`, `ImageUtil.java` in `util/` | Pure utility — no JavaFX, no Firebase, easily testable |
+
+---
+
+### What `DashboardController` becomes
+
+After refactoring it only does **3 things**:
+1. `@FXML` field injection (wiring UI elements)
+2. `initialize()` — calls sub-controllers to set up their panels
+3. Tab switching logic
+
+Everything else is delegated. An evaluator asking *"where does message rendering happen?"* gets a clean answer: `MessageRenderer.java`.
+
+---
+
+### Interfaces — where do they go?
+
+The 5 listener interfaces (`MessageListener`, `GroupMessageListener`, etc.) move to a dedicated `listeners/` package under `services/` so they're clearly the contract between services and controllers.
+
+---
+
+**Does this plan make sense to you?** A few things to confirm before I generate:
+
+1. Should I keep the original files as-is alongside, or fully replace them?
+2. Do you want me to generate one package at a time (e.g. `services/` first, then `controllers/`) so it's easier to follow?
