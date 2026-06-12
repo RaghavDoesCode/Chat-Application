@@ -23,7 +23,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -53,16 +52,9 @@ public class GroupPanelController {
     private final ListView<String> groupsListView;
     private final List<String>     groupIdList;
 
-    public GroupPanelController(ChatContext ctx,
-                                 MessageRenderer renderer,
-                                 List<User> friendsList,
-                                 Label chatHeaderName,
-                                 Label chatHeaderStatus,
-                                 ImageView chatHeaderAvatar,
-                                 VBox chatPane,
-                                 VBox welcomePane,
-                                 ListView<String> groupsListView,
-                                 List<String> groupIdList) {
+    public GroupPanelController(ChatContext ctx, MessageRenderer renderer, List<User> friendsList, Label chatHeaderName,
+                                Label chatHeaderStatus, ImageView chatHeaderAvatar, VBox chatPane, VBox welcomePane,
+                                ListView<String> groupsListView, List<String> groupIdList) {
         this.ctx             = ctx;
         this.renderer        = renderer;
         this.friendsList     = friendsList;

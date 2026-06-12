@@ -44,8 +44,7 @@ public class GroupService {
      *
      * Returns the new groupId on success.
      */
-    public static CompletableFuture<String> createGroup(String groupName,
-                                                         List<String> memberUIDs) {
+    public static CompletableFuture<String> createGroup(String groupName, List<String> memberUIDs) {
         CompletableFuture<String> f = new CompletableFuture<>();
         try {
             DatabaseReference gRef = FirebaseInitializer.getDatabase()
@@ -86,8 +85,7 @@ public class GroupService {
      * Sends a message to a group. Includes senderName so receivers can
      * display who sent each message without an extra DB lookup.
      */
-    public static void sendGroupMessage(String groupId, String content,
-                                         String type, String fileName) {
+    public static void sendGroupMessage(String groupId, String content, String type, String fileName) {
         DatabaseReference ref = FirebaseInitializer.getDatabase()
             .child("group_messages").child(groupId).push();
         long ts = System.currentTimeMillis();
@@ -141,8 +139,7 @@ public class GroupService {
      * Attaches a real-time listener to /group_messages/{groupId}.
      * Fires onChildAdded for all existing messages, then for each new one.
      */
-    public static void listenForGroupMessages(String groupId,
-                                               GroupMessageListener listener) {
+    public static void listenForGroupMessages(String groupId, GroupMessageListener listener) {
         FirebaseInitializer.getDatabase()
             .child("group_messages").child(groupId)
             .addChildEventListener(new ChildEventListener() {

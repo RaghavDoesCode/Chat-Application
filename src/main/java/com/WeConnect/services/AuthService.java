@@ -46,9 +46,7 @@ public class AuthService {
      * Creates a new Firebase Auth user and writes their profile to /users/{uid}.
      * Returns the new UID on success.
      */
-    public static CompletableFuture<String> registerUser(String name,
-                                                          String email,
-                                                          String password) {
+    public static CompletableFuture<String> registerUser(String name, String email, String password) {
         CompletableFuture<String> f = new CompletableFuture<>();
         try {
             FirebaseAuth auth = FirebaseAuth.getInstance();

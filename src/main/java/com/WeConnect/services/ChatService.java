@@ -53,9 +53,7 @@ public class ChatService {
      * Returns a CompletableFuture so the caller can attach .exceptionally()
      * to show an error alert if the file is too large or unreadable.
      */
-    public static CompletableFuture<Void> sendFileMessage(String receiverUID,
-                                                           File file,
-                                                           String messageType) {
+    public static CompletableFuture<Void> sendFileMessage(String receiverUID, File file, String messageType) {
         CompletableFuture<Void> f = new CompletableFuture<>();
         new Thread(() -> {
             try {
@@ -78,8 +76,7 @@ public class ChatService {
      * writes the same message to both the sender's and receiver's message paths.
      * Also updates the last-message preview for both users.
      */
-    private static void sendInternal(String receiverUID, String content,
-                                      String type, String fileName) {
+    private static void sendInternal(String receiverUID, String content, String type, String fileName) {
         DatabaseReference ref = FirebaseInitializer.getDatabase()
             .child("messages")
             .child(AuthService.currentUserUID)

@@ -1,13 +1,17 @@
 package com.WeConnect.controllers;
 
 import com.WeConnect.Main;
-import com.WeConnect.services.FirebaseService;
+import com.WeConnect.services.AuthService;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 
 public class RegisterController {
 
@@ -46,7 +50,7 @@ public class RegisterController {
         registerBtn.setDisable(true);
         registerBtn.setText("Creating account...");
 
-        FirebaseService.getInstance().registerUser(name, email, password)
+        AuthService.registerUser(name, email, password)
                 .thenAccept(uid -> Platform.runLater(() -> {
                     try {
                         goToLogin();

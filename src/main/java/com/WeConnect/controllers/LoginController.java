@@ -1,7 +1,7 @@
 package com.WeConnect.controllers;
 
 import com.WeConnect.Main;
-import com.WeConnect.services.FirebaseService;
+import com.WeConnect.services.AuthService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -39,7 +39,7 @@ public class LoginController {
         loginBtn.setDisable(true);
         loginBtn.setText("Logging in...");
 
-        FirebaseService.getInstance().loginUser(email, password)
+        AuthService.loginUser(email, password)
                 .thenAccept(uid -> Platform.runLater(() -> {
                     try {
                         navigateToDashboard();
@@ -76,7 +76,7 @@ public class LoginController {
         Parent root = FXMLLoader.load(getClass().getResource("/com/WeConnect/fxml/dashboard.fxml"));
         Scene scene = new Scene(root, 900, 620);
         scene.getStylesheets().add(getClass().getResource("/com/WeConnect/css/style.css").toExternalForm());
-        Main.primaryStage.setTitle("WeConnect — " + FirebaseService.currentUserName);
+        Main.primaryStage.setTitle("WeConnect — " + AuthService.currentUserName);
         Main.primaryStage.setResizable(true);
         Main.primaryStage.setScene(scene);
     }
