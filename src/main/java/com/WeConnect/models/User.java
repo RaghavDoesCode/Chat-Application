@@ -1,8 +1,8 @@
 package com.WeConnect.models;
 
-/**
- * User model — extended with profileImageUrl for Firebase Storage URLs.
- */
+/*
+  * User model — extended with profileImageUrl for Firebase Storage URLs.
+*/
 public class User {
     private String uid;
     private String name;

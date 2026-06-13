@@ -4,8 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Message model — extended to support all message types.
- * type: "text" | "image" | "file" | "audio" | "emoji"
+  * Message model — extended to support all message types.
+  * type: "text" | "image" | "file" | "audio" | "emoji"
  */
 public class Message {
     private String from;

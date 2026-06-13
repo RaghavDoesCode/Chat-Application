@@ -3,12 +3,11 @@ package com.WeConnect.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Group model for group chats.
- *
- * Firebase path:  groups/{groupId}/
- *   name, createdBy, createdAt, members/{uid} = true
- */
+/*
+  * Group model for group chats.
+  * Firebase path:  groups/{groupId}/
+  * name, createdBy, createdAt, members/{uid} = true
+*/
 public class Group {
     private String groupId;
     private String name;
